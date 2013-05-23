@@ -1,6 +1,6 @@
 <?php
 
-namespace fkooman\x509;
+namespace fkooman\X509;
 
 class CertParserException extends \Exception
 {

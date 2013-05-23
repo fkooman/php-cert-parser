@@ -12,18 +12,23 @@ loaded from a file:
     <?php
 
     try { 
-        $cp = \fkooman\x509\CertParser::fromFile("certificate.pem");
-        echo date("r", $cp->getExpiry()) . PHP_EOL;
-    } catch (\fkooman\x509\CertParserException $e) {
+        $cp = \fkooman\X509\CertParser::fromFile("certificate.pem");
+        echo date("r", $cp->getNotValidAfter()) . PHP_EOL;
+    } catch (\fkooman\X509\CertParserException $e) {
         echo $e->getMessage();
     }
 
 Or from a string:
 
     try { 
-        $cp = new \fkooman\x509\CertParser("MIIDyzCC...CYkxLaPI");
-        echo date("r", $cp->getExpiry()) . PHP_EOL;
-    } catch (\fkooman\x509\CertParserException $e) {
+        $cp = new \fkooman\X509\CertParser("MIIDyzCC...CYkxLaPI");
+        echo date("r", $cp->getNotValidAfter()) . PHP_EOL;
+    } catch (\fkooman\X509\CertParserException $e) {
         echo $e->getMessage();
     }
+
+Other API calls:
+
+* `getFingerprint()` - get the SHA1 fingerprint of the certificate
+* `getName()` - get the subject DN
 
