@@ -6,6 +6,7 @@
     }, 
     "name": "fkooman/php-cert-parser", 
     "require": {
+        "ext-openssl": "*", 
         "php": ">=5.3.0"
     }
 }
