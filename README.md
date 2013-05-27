@@ -27,8 +27,15 @@ Or from a string:
         echo $e->getMessage();
     }
 
-Other API calls:
+All API calls:
 
 * `getFingerprint()` - get the SHA1 fingerprint of the certificate
 * `getName()` - get the subject DN
-
+* `notValidBefore()` - get the UNIX timestamp from which the certificate is 
+  valid
+* `notValidAfter()` - get the UNIX timestamp after which the certificate is no 
+  longer valid
+* `toDer()` - get the DER encoded certificate
+* `toPem()` - get the certificate as PEM
+* `toBase64()` - get the base64 encoded DER certificate (PEM without headers on 
+  one line)
