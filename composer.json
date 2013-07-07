@@ -1,12 +1,21 @@
 {
+    "authors": [
+        {
+            "email": "fkooman@tuxed.net",
+            "name": "Fran\u00e7ois Kooman",
+            "role": "Developer"
+        }
+    ],
     "autoload": {
         "psr-0": {
             "fkooman\\X509\\": "src/"
         }
-    }, 
-    "name": "fkooman/php-cert-parser", 
+    },
+    "description": "Simple OpenSSL based X.509 certificate parser",
+    "license": "Apache-2.0",
+    "name": "fkooman/php-cert-parser",
     "require": {
-        "ext-openssl": "*", 
+        "ext-openssl": "*",
         "php": ">=5.3.0"
     }
 }

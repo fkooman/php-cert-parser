@@ -29,7 +29,9 @@ Or from a string:
 
 All API calls:
 
-* `getFingerprint()` - get the SHA1 fingerprint of the certificate
+* `getFingerprint($algorithm = "sha1")` - get the fingerprint of the 
+  certificate, by default `sha1`. See `hash_algos()` in the PHP manual to
+  figure out supported hash algorithms
 * `getName()` - get the subject DN
 * `notValidBefore()` - get the UNIX timestamp from which the certificate is 
   valid
@@ -39,3 +41,9 @@ All API calls:
 * `toPem()` - get the certificate as PEM
 * `toBase64()` - get the base64 encoded DER certificate (PEM without headers on 
   one line)
+
+# License
+Licensed under the Apache License, Version 2.0;
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
