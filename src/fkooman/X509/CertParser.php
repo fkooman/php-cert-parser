@@ -115,7 +115,7 @@ class CertParser
             throw new CertParserException(sprintf("unsupported algorithm '%s'", $algorithm));
         }
 
-        return hash("sha1", $this->toDer());
+        return hash($algorithm, $this->toDer());
     }
 
     /**

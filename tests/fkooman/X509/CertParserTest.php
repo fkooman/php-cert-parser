@@ -35,11 +35,12 @@ class ClientRegistrationTest extends PHPUnit_Framework_TestCase
             $this->assertEquals(1295864337, $c->getNotValidBefore());
             $this->assertEquals(1611397137, $c->getNotValidAfter());
             $this->assertEquals('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $c->getName());
-            $this->assertEquals('a36aac83b9a552b3dc724bfc0d7bba6283af5f8e', $c->getFingerprint());
+            $this->assertEquals('a36aac83b9a552b3dc724bfc0d7bba6283af5f8e', $c->getFingerprint("sha1"));
+            $this->assertEquals('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', $c->getFingerprint("sha256"));
 
             $base64 = $c->toBase64();
             $d = new CertParser($base64);
-            $this->assertEquals('a36aac83b9a552b3dc724bfc0d7bba6283af5f8e', $d->getFingerprint());
+            $this->assertEquals('a36aac83b9a552b3dc724bfc0d7bba6283af5f8e', $d->getFingerprint("sha1"));
         }
     }
 
@@ -50,6 +51,17 @@ class ClientRegistrationTest extends PHPUnit_Framework_TestCase
     public function testBrokenData()
     {
         $c = new CertParser("foo");
+    }
+
+    /**
+     * @expectedException \fkooman\X509\CertParserException
+     * @expectedExceptionMessage unsupported algorithm 'foo'
+     */
+    public function testUnsupportedAlgorithm()
+    {
+        $testFile = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "1.pem";
+        $c = CertParser::fromFile($testFile);
+        $c->getFingerprint("foo");
     }
 
 }
