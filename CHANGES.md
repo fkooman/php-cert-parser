@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.4
+- add Travis CI configuration script
+
 ## 0.1.3
 - actually make algorithm choosing work, still had SHA1 hard coded
 - add additional tests for getFingerprint()
