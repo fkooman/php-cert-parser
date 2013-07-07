@@ -5,6 +5,8 @@ to extract some attributes from it.
 Currently the API is very limited and will be expanded based on actual 
 needs API consumers.
 
+[![Build Status](https://secure.travis-ci.org/fkooman/php-cert-parser.png?branch=master)](http://travis-ci.org/fkooman/php-cert-parser)
+
 # API
 For example, to obtain the certificate expiry date from a certificate 
 loaded from a file:
