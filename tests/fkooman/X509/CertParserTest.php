@@ -99,14 +99,14 @@ class ClientRegistrationTest extends PHPUnit_Framework_TestCase
     {
         $cert = $this->generateCertParser('2');
         $ca   = $this->generateCertParser('2-ca');
-        $this->assertTrue($cert->isSignedBy($ca));
+        $this->assertTrue($cert->isIssuedBy($ca));
     }
 
     public function testInvalidSigningChainIsCorrectlyRecognized()
     {
         $cert = $this->generateCertParser('2');
         $ca   = $this->generateCertParser('2-ca');
-        $this->assertFalse($ca->isSignedBy($cert));
+        $this->assertFalse($ca->isIssuedBy($cert));
     }
 
     protected function generateCertParser($name = '1')

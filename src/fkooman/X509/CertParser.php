@@ -175,12 +175,14 @@ class CertParser
     }
 
     /**
+     * Checks whether current cert is issued by given cert
+     *
      * @param CertParser $cert
      *
      * @throws CertParserException
      * @return bool
      */
-    public function isSignedBy(CertParser $cert)
+    public function isIssuedBy(CertParser $cert)
     {
         return $this->getIssuer() === $cert->getSubject();
     }
