@@ -4,6 +4,11 @@
             "email": "fkooman@tuxed.net",
             "name": "Fran\u00e7ois Kooman",
             "role": "Developer"
+        },
+        {
+            "email": "uk@fortrabbit.com",
+            "name": "Ulrich Kautz",
+            "role": "Developer"
         }
     ],
     "autoload": {
@@ -17,5 +22,8 @@
     "require": {
         "ext-openssl": "*",
         "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "*"
     }
 }

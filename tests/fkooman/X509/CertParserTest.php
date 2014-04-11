@@ -64,4 +64,57 @@ class ClientRegistrationTest extends PHPUnit_Framework_TestCase
         $c->getFingerprint("foo");
     }
 
+    public function testAccessToCertData()
+    {
+        $certParser = $this->generateCertParser();
+        $result     = $certParser->getCertData();
+        $this->assertInternalType('array', $result);
+        $this->assertArrayHasKey('issuer', $result);
+        $this->assertArrayHasKey('name', $result);
+        $this->assertArrayHasKey('subject', $result);
+    }
+
+    public function testSubjectIsExtractedAndFormatted()
+    {
+        $certParser = $this->generateCertParser('2');
+        $result     = $certParser->getSubject();
+        $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing, CN=foobar.tld, emailAddress=baz@foobar.tld', $result);
+    }
+
+    public function testIssuerIsExtractedAndFormatted()
+    {
+        $certParser = $this->generateCertParser('2');
+        $result     = $certParser->getIssuer();
+        $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing CA, CN=foobar.tld, emailAddress=baz@foobar.tld', $result);
+    }
+
+    public function testMultipleComponentsInDistinguishedName()
+    {
+        $certParser = $this->generateCertParser('2-multi');
+        $result     = $certParser->getSubject();
+        $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing Multi, OU=Foo, CN=multi.foobar.tld, emailAddress=baz@foobar.tld', $result);
+    }
+
+    public function testValidSigningChainIsCorrectlyRecognized()
+    {
+        $cert = $this->generateCertParser('2');
+        $ca   = $this->generateCertParser('2-ca');
+        $this->assertTrue($cert->isSignedBy($ca));
+    }
+
+    public function testInvalidSigningChainIsCorrectlyRecognized()
+    {
+        $cert = $this->generateCertParser('2');
+        $ca   = $this->generateCertParser('2-ca');
+        $this->assertFalse($ca->isSignedBy($cert));
+    }
+
+    protected function generateCertParser($name = '1')
+    {
+        $testFile = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "{$name}.pem";
+        $c = CertParser::fromFile($testFile);
+
+        return $c;
+    }
+
 }
