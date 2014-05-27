@@ -13,19 +13,22 @@ loaded from a file:
 
     <?php
 
+    use fkooman\X509\CertParser;
+    use fkooman\X509\CertParserException;
+
     try { 
-        $cp = \fkooman\X509\CertParser::fromFile("certificate.pem");
+        $cp = CertParser::fromFile("certificate.pem");
         echo date("r", $cp->getNotValidAfter()) . PHP_EOL;
-    } catch (\fkooman\X509\CertParserException $e) {
+    } catch (CertParserException $e) {
         echo $e->getMessage();
     }
 
 Or from a string:
 
     try { 
-        $cp = new \fkooman\X509\CertParser("MIIDyzCC...CYkxLaPI");
+        $cp = new CertParser("MIIDyzCC...CYkxLaPI");
         echo date("r", $cp->getNotValidAfter()) . PHP_EOL;
-    } catch (\fkooman\X509\CertParserException $e) {
+    } catch (CertParserException $e) {
         echo $e->getMessage();
     }
 
