@@ -21,8 +21,8 @@ namespace fkooman\X509;
 class CertParser
 {
 
-    private $_strippedCert;
-    private $_parsedCert;
+    private $strippedCert;
+    private $parsedCert;
 
     /**
      * Construct the CertParser object.
@@ -44,7 +44,7 @@ class CertParser
         $certData = str_replace($replaceCharacters, '', $certData);
 
         // store this stripped certificate
-        $this->_strippedCert = $certData;
+        $this->strippedCert = $certData;
 
         // parse the certificate using OpenSSL
         if (!function_exists("openssl_x509_parse")) {
@@ -52,16 +52,16 @@ class CertParser
         }
 
         $c = openssl_x509_parse($this->toPEM());
-        if (FALSE === $c) {
+        if (false === $c) {
             throw new CertParserException("unable to parse the certificate");
         }
 
-        $this->_parsedCert = $c;
+        $this->parsedCert = $c;
     }
 
     public function toBase64()
     {
-        return $this->_strippedCert;
+        return $this->strippedCert;
     }
 
     public function toDer()
@@ -72,13 +72,15 @@ class CertParser
     public function toPem()
     {
         // prepend header and append footer
-        return "-----BEGIN CERTIFICATE-----" . PHP_EOL . wordwrap($this->toBase64(), 64, "\n", TRUE) . PHP_EOL . "-----END CERTIFICATE-----" . PHP_EOL;
+        $wrapped = wordwrap($this->toBase64(), 64, "\n", true);
+
+        return "-----BEGIN CERTIFICATE-----" . PHP_EOL . $wrapped . PHP_EOL . "-----END CERTIFICATE-----" . PHP_EOL;
     }
 
     public static function fromFile($fileName)
     {
         $fileData = @file_get_contents($fileName);
-        if (FALSE === $fileData) {
+        if (false === $fileData) {
             throw new CertParserException("unable to read file");
         }
 
@@ -90,11 +92,11 @@ class CertParser
      */
     public function getNotValidBefore()
     {
-        if (!array_key_exists("validFrom_time_t", $this->_parsedCert)) {
+        if (!array_key_exists("validFrom_time_t", $this->parsedCert)) {
             throw new CertParserException("could not find 'validFrom_time_t' key");
         }
 
-        return $this->_parsedCert['validFrom_time_t'];
+        return $this->parsedCert['validFrom_time_t'];
     }
 
     /**
@@ -102,11 +104,11 @@ class CertParser
      */
     public function getNotValidAfter()
     {
-        if (!array_key_exists("validTo_time_t", $this->_parsedCert)) {
+        if (!array_key_exists("validTo_time_t", $this->parsedCert)) {
             throw new CertParserException("could not find 'validTo_time_t' key");
         }
 
-        return $this->_parsedCert['validTo_time_t'];
+        return $this->parsedCert['validTo_time_t'];
     }
 
     public function getFingerprint($algorithm = "sha1")
@@ -123,11 +125,11 @@ class CertParser
      */
     public function getName()
     {
-        if (!array_key_exists("name", $this->_parsedCert)) {
+        if (!array_key_exists("name", $this->parsedCert)) {
             throw new CertParserException("could not find 'name' key");
         }
 
-        return $this->_parsedCert['name'];
+        return $this->parsedCert['name'];
     }
 
     /**
@@ -137,7 +139,7 @@ class CertParser
      */
     public function getCertData()
     {
-        return $this->_parsedCert;
+        return $this->parsedCert;
     }
 
     /**
@@ -149,12 +151,12 @@ class CertParser
     public function getSubject()
     {
         // @codeCoverageIgnoreStart
-        if (!array_key_exists('subject', $this->_parsedCert)) {
+        if (!array_key_exists('subject', $this->parsedCert)) {
             throw new CertParserException("could not find 'subject' key");
         }
         // @codeCoverageIgnoreEnd
 
-        return $this->toDistinguishedName($this->_parsedCert['subject']);
+        return $this->toDistinguishedName($this->parsedCert['subject']);
     }
 
     /**
@@ -166,12 +168,12 @@ class CertParser
     public function getIssuer()
     {
         // @codeCoverageIgnoreStart
-        if (!array_key_exists('issuer', $this->_parsedCert)) {
+        if (!array_key_exists('issuer', $this->parsedCert)) {
             throw new CertParserException("could not find 'issuer' key");
         }
         // @codeCoverageIgnoreEnd
 
-        return $this->toDistinguishedName($this->_parsedCert['issuer']);
+        return $this->toDistinguishedName($this->parsedCert['issuer']);
     }
 
     /**

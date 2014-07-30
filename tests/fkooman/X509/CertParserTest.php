@@ -16,13 +16,9 @@
  * limitations under the License.
  */
 
-require_once 'src/fkooman/X509/CertParser.php';
-require_once 'src/fkooman/X509/CertParserException.php';
+namespace fkooman\X509;
 
-use \fkooman\X509\CertParser as CertParser;
-use \fkooman\X509\CertParserException as CertParserException;
-
-class ClientRegistrationTest extends PHPUnit_Framework_TestCase
+class CertParserTest extends \PHPUnit_Framework_TestCase
 {
 
     public function testCert()
@@ -34,9 +30,18 @@ class ClientRegistrationTest extends PHPUnit_Framework_TestCase
             $c = CertParser::fromFile($dataDir . DIRECTORY_SEPARATOR . $t);
             $this->assertEquals(1295864337, $c->getNotValidBefore());
             $this->assertEquals(1611397137, $c->getNotValidAfter());
-            $this->assertEquals('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $c->getName());
-            $this->assertEquals('a36aac83b9a552b3dc724bfc0d7bba6283af5f8e', $c->getFingerprint("sha1"));
-            $this->assertEquals('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', $c->getFingerprint("sha256"));
+            $this->assertEquals(
+                '/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl',
+                $c->getName()
+            );
+            $this->assertEquals(
+                'a36aac83b9a552b3dc724bfc0d7bba6283af5f8e',
+                $c->getFingerprint("sha1")
+            );
+            $this->assertEquals(
+                '47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407',
+                $c->getFingerprint("sha256")
+            );
 
             $base64 = $c->toBase64();
             $d = new CertParser($base64);
