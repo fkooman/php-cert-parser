@@ -95,9 +95,13 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
 
     public function testMultipleComponentsInDistinguishedName()
     {
-        $certParser = $this->generateCertParser('2-multi');
-        $result     = $certParser->getSubject();
-        $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing Multi, OU=Foo, CN=multi.foobar.tld, emailAddress=baz@foobar.tld', $result);
+        if (PHP_VERSION <= '5.4.0') {
+            $this->markTestSkipped('Works only with PHP >= 5.4');
+        } else {
+            $certParser = $this->generateCertParser('2-multi');
+            $result     = $certParser->getSubject();
+            $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing Multi, OU=Foo, CN=multi.foobar.tld, emailAddress=baz@foobar.tld', $result);
+        }
     }
 
     public function testValidSigningChainIsCorrectlyRecognized()
