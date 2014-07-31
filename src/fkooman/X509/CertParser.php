@@ -131,4 +131,87 @@ class CertParser
 
         return $this->parsedCert['name'];
     }
+
+    /**
+     * Returns parsed array data
+     *
+     * @return array
+     */
+    public function getCertData()
+    {
+        return $this->parsedCert;
+    }
+
+    /**
+     * Get the whole subject as string
+     *
+     * @throws CertParserException
+     * @return string
+     */
+    public function getSubject()
+    {
+        // @codeCoverageIgnoreStart
+        if (!array_key_exists('subject', $this->parsedCert)) {
+            throw new CertParserException("could not find 'subject' key");
+        }
+        // @codeCoverageIgnoreEnd
+
+        return $this->toDistinguishedName($this->parsedCert['subject']);
+    }
+
+    /**
+     * Get the whole subject as string
+     *
+     * @throws CertParserException
+     * @return string
+     */
+    public function getIssuer()
+    {
+        // @codeCoverageIgnoreStart
+        if (!array_key_exists('issuer', $this->parsedCert)) {
+            throw new CertParserException("could not find 'issuer' key");
+        }
+        // @codeCoverageIgnoreEnd
+
+        return $this->toDistinguishedName($this->parsedCert['issuer']);
+    }
+
+    /**
+     * Checks whether current cert is issued by given cert
+     *
+     * @param CertParser $cert
+     *
+     * @throws CertParserException
+     * @return bool
+     */
+    public function isIssuedBy(CertParser $cert)
+    {
+        return $this->getIssuer() === $cert->getSubject();
+    }
+
+    /**
+     * Transforms the array notification of the distinguished name component to string
+     *
+     * @param array  $data
+     * @param string $separator
+     *
+     * @return string
+     */
+    protected function toDistinguishedName(array $data, $separator = ', ')
+    {
+        $output = array();
+        foreach ($data as $key => $item) {
+            if (is_array($item)) {
+                foreach ($item as $value) {
+                    $output [] = "$key=$value";
+                }
+            } else {
+                $output [] = "$key=$item";
+            }
+        }
+
+        return implode($separator, $output);
+    }
+
+
 }
