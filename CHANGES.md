@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5
+- add contribution from Ulrich Kautz to make it possible to check whether a 
+  certificate is issued by another certificate (WEAK comparison by comparing
+  the DN from the issuer and the subject, no certificate verification!)
+ 
 ## 0.1.4
 - add Travis CI configuration script
 

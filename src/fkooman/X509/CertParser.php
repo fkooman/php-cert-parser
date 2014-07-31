@@ -133,16 +133,6 @@ class CertParser
     }
 
     /**
-     * Returns parsed array data
-     *
-     * @return array
-     */
-    public function getCertData()
-    {
-        return $this->parsedCert;
-    }
-
-    /**
      * Get the whole subject as string
      *
      * @throws CertParserException
@@ -155,7 +145,6 @@ class CertParser
             throw new CertParserException("could not find 'subject' key");
         }
         // @codeCoverageIgnoreEnd
-
         return $this->toDistinguishedName($this->parsedCert['subject']);
     }
 
@@ -172,7 +161,6 @@ class CertParser
             throw new CertParserException("could not find 'issuer' key");
         }
         // @codeCoverageIgnoreEnd
-
         return $this->toDistinguishedName($this->parsedCert['issuer']);
     }
 
@@ -187,6 +175,16 @@ class CertParser
     public function isIssuedBy(CertParser $cert)
     {
         return $this->getIssuer() === $cert->getSubject();
+    }
+
+    /**
+     * Returns parsed array data
+     *
+     * @return array
+     */
+    private function getCertData()
+    {
+        return $this->parsedCert;
     }
 
     /**
@@ -212,6 +210,4 @@ class CertParser
 
         return implode($separator, $output);
     }
-
-
 }

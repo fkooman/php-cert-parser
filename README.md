@@ -46,6 +46,8 @@ All API calls:
 * `toPem()` - get the certificate as PEM
 * `toBase64()` - get the base64 encoded DER certificate (PEM without headers on 
   one line)
+* `isIssuedBy()` - check wheter the current certificate is issued by the provided
+  certificate. WEAK comparison only by comparing DNs, not by verifying signatures
 
 # License
 Licensed under the Apache License, Version 2.0;

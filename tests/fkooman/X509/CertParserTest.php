@@ -69,16 +69,6 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
         $c->getFingerprint("foo");
     }
 
-    public function testAccessToCertData()
-    {
-        $certParser = $this->generateCertParser();
-        $result     = $certParser->getCertData();
-        $this->assertInternalType('array', $result);
-        $this->assertArrayHasKey('issuer', $result);
-        $this->assertArrayHasKey('name', $result);
-        $this->assertArrayHasKey('subject', $result);
-    }
-
     public function testSubjectIsExtractedAndFormatted()
     {
         $certParser = $this->generateCertParser('2');
