@@ -20,13 +20,12 @@ namespace fkooman\X509;
 
 class CertParser
 {
-
     private $strippedCert;
     private $parsedCert;
 
     /**
      * Construct the CertParser object.
-     *
+     * 
      * @param certData the PEM or base64 encoded DER certificate data
      */
     public function __construct($certData)
@@ -35,10 +34,11 @@ class CertParser
             throw new CertParserException("input should be string");
         }
 
-        // strip header and footer from PEM if present
-        $certData = preg_replace('/\-+BEGIN CERTIFICATE\-+/', '', $certData);
-        $certData = preg_replace('/\-+END CERTIFICATE\-+/', '', $certData);
-
+        $pattern = '/-----BEGIN CERTIFICATE-----(.*)-----END CERTIFICATE-----/msU';
+        if(1 === preg_match($pattern, $certData, $matches)) {
+            $certData = $matches[1];
+        }
+        
         // create one long string of the certificate
         $replaceCharacters = array(" ", "\t", "\n", "\r", "\0" , "\x0B");
         $certData = str_replace($replaceCharacters, '', $certData);

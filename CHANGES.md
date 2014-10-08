@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.6
+- also support PEM files containing some text before the actual certificate
+
 ## 0.1.5
 - add contribution from Ulrich Kautz to make it possible to check whether a 
   certificate is issued by another certificate (WEAK comparison by comparing

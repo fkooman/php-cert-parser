@@ -49,6 +49,13 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
         }
     }
 
+    public function testGarbage()
+    {
+        $dataDir = dirname(dirname(__DIR__)) . "/data";
+        $c = CertParser::fromFile($dataDir . "/garbage-header.pem");
+        $this->assertEquals("e16f4100e1562ac8b75fb21b1b89875d40ca50ba", $c->getFingerPrint());
+    }
+
     /**
      * @expectedException \fkooman\X509\CertParserException
      * @expectedExceptionMessage unable to parse the certificate
@@ -115,5 +122,4 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
 
         return $c;
     }
-
 }
