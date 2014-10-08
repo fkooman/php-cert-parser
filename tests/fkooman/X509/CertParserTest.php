@@ -20,14 +20,13 @@ namespace fkooman\X509;
 
 class CertParserTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testCert()
     {
-        $dataDir = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "data";
+        $dataDir = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR."data";
         $testFiles = array ("1.pem");
 
         foreach ($testFiles as $t) {
-            $c = CertParser::fromFile($dataDir . DIRECTORY_SEPARATOR . $t);
+            $c = CertParser::fromFile($dataDir.DIRECTORY_SEPARATOR.$t);
             $this->assertEquals(1295864337, $c->getNotValidBefore());
             $this->assertEquals(1611397137, $c->getNotValidAfter());
             $this->assertEquals(
@@ -51,8 +50,8 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
 
     public function testGarbage()
     {
-        $dataDir = dirname(dirname(__DIR__)) . "/data";
-        $c = CertParser::fromFile($dataDir . "/garbage-header.pem");
+        $dataDir = dirname(dirname(__DIR__))."/data";
+        $c = CertParser::fromFile($dataDir."/garbage-header.pem");
         $this->assertEquals("e16f4100e1562ac8b75fb21b1b89875d40ca50ba", $c->getFingerPrint());
     }
 
@@ -71,7 +70,7 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testUnsupportedAlgorithm()
     {
-        $testFile = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "1.pem";
+        $testFile = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR."data".DIRECTORY_SEPARATOR."1.pem";
         $c = CertParser::fromFile($testFile);
         $c->getFingerprint("foo");
     }
@@ -117,7 +116,7 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
 
     protected function generateCertParser($name = '1')
     {
-        $testFile = dirname(dirname(__DIR__)) . DIRECTORY_SEPARATOR . "data" . DIRECTORY_SEPARATOR . "{$name}.pem";
+        $testFile = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR."data".DIRECTORY_SEPARATOR."{$name}.pem";
         $c = CertParser::fromFile($testFile);
 
         return $c;

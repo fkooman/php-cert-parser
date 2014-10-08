@@ -25,7 +25,7 @@ class CertParser
 
     /**
      * Construct the CertParser object.
-     * 
+     *
      * @param certData the PEM or base64 encoded DER certificate data
      */
     public function __construct($certData)
@@ -35,10 +35,10 @@ class CertParser
         }
 
         $pattern = '/-----BEGIN CERTIFICATE-----(.*)-----END CERTIFICATE-----/msU';
-        if(1 === preg_match($pattern, $certData, $matches)) {
+        if (1 === preg_match($pattern, $certData, $matches)) {
             $certData = $matches[1];
         }
-        
+
         // create one long string of the certificate
         $replaceCharacters = array(" ", "\t", "\n", "\r", "\0" , "\x0B");
         $certData = str_replace($replaceCharacters, '', $certData);
@@ -74,7 +74,7 @@ class CertParser
         // prepend header and append footer
         $wrapped = wordwrap($this->toBase64(), 64, "\n", true);
 
-        return "-----BEGIN CERTIFICATE-----" . PHP_EOL . $wrapped . PHP_EOL . "-----END CERTIFICATE-----" . PHP_EOL;
+        return "-----BEGIN CERTIFICATE-----".PHP_EOL.$wrapped.PHP_EOL."-----END CERTIFICATE-----".PHP_EOL;
     }
 
     public static function fromFile($fileName)
