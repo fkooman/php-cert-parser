@@ -45,6 +45,7 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
             $base64 = $c->toBase64();
             $d = new CertParser($base64);
             $this->assertEquals('a36aac83b9a552b3dc724bfc0d7bba6283af5f8e', $d->getFingerprint("sha1"));
+            $this->assertEquals('R2WaE2R9K--71DGwWAB5xCA8OJff-Q6SV4y5ojXWdAc', $d->getFingerprint('sha256', true));
         }
     }
 

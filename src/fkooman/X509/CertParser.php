@@ -111,10 +111,23 @@ class CertParser
         return $this->parsedCert['validTo_time_t'];
     }
 
-    public function getFingerprint($algorithm = "sha1")
+    public function getFingerprint($algorithm = "sha1", $uriSafe = false)
     {
         if (!in_array($algorithm, hash_algos())) {
             throw new CertParserException(sprintf("unsupported algorithm '%s'", $algorithm));
+        }
+
+        if ($uriSafe) {
+            return rtrim(
+                strtr(
+                    base64_encode(
+                        hash($algorithm, $this->toDer(), true)
+                    ),
+                    '+/',
+                    '-_'
+                ),
+                '='
+            );
         }
 
         return hash($algorithm, $this->toDer());

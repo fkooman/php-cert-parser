@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.7
+- support URL safe fingerprint encoding by specifying `true` as second
+  parameter to `getFingerprint()`, see
+  [http://tools.ietf.org/html/draft-hallambaker-digesturi-02](http://tools.ietf.org/html/draft-hallambaker-digesturi-02)
+
 ## 0.1.6
 - also support PEM files containing some text before the actual certificate
 - rename package to `fkooman/cert-parser`
