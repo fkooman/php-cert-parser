@@ -2,6 +2,7 @@
 
 ## 0.1.6
 - also support PEM files containing some text before the actual certificate
+- rename package to `fkooman/cert-parser`
 
 ## 0.1.5
 - add contribution from Ulrich Kautz to make it possible to check whether a 
