@@ -18,7 +18,7 @@
     },
     "description": "Simple OpenSSL based X.509 certificate parser",
     "license": "Apache-2.0",
-    "name": "fkooman/php-cert-parser",
+    "name": "fkooman/cert-parser",
     "require": {
         "ext-openssl": "*",
         "php": ">=5.3.3"
