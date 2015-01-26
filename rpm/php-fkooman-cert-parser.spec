@@ -6,7 +6,7 @@
 
 Name:       php-%{composer_vendor}-%{composer_project}
 Version:    0.1.8
-Release:    2%{?dist}
+Release:    1%{?dist}
 Summary:    Simple OpenSSL based X.509 certificate parser
 
 Group:      System Environment/Libraries
