@@ -23,7 +23,7 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
     public function testCert()
     {
         $dataDir = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR."data";
-        $testFiles = array ("1.pem");
+        $testFiles = array("1.pem");
 
         foreach ($testFiles as $t) {
             $c = CertParser::fromFile($dataDir.DIRECTORY_SEPARATOR.$t);
