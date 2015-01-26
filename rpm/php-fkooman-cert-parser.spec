@@ -5,8 +5,8 @@
 %global github_name      php-cert-parser
 
 Name:       php-%{composer_vendor}-%{composer_project}
-Version:    0.1.7
-Release:    1%{?dist}
+Version:    0.1.8
+Release:    2%{?dist}
 Summary:    Simple OpenSSL based X.509 certificate parser
 
 Group:      System Environment/Libraries
@@ -39,8 +39,5 @@ cp -pr src/* ${RPM_BUILD_ROOT}%{_datadir}/php
 %doc README.md CHANGES.md COPYING composer.json
 
 %changelog
-* Mon Jan 26 2015 François Kooman <fkooman@tuxed.net> - 0.1.7-1
-- initial package
-
-* Thu Oct 23 2014 François Kooman <fkooman@tuxed.net> - 0.1.7-1
-- initial package
+* Mon Jan 26 2015 François Kooman <fkooman@tuxed.net> - 0.1.8-1
+- update to 0.1.8

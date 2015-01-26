@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.8
+- add RPM spec files
+- add COPYING file
+
 ## 0.1.7
 - support URL safe fingerprint encoding by specifying `true` as second
   parameter to `getFingerprint()`, see
