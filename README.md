@@ -14,28 +14,27 @@ loaded from a file:
     <?php
 
     use fkooman\X509\CertParser;
-    use fkooman\X509\CertParserException;
 
     try { 
-        $cp = CertParser::fromFile("certificate.pem");
-        echo date("r", $cp->getNotValidAfter()) . PHP_EOL;
-    } catch (CertParserException $e) {
+        $cp = CertParser::fromFile('certificate.pem');
+        echo date('r', $cp->getNotValidAfter()) . PHP_EOL;
+    } catch (Exception $e) {
         echo $e->getMessage();
     }
 
 Or from a string:
 
     try { 
-        $cp = new CertParser("MIIDyzCC...CYkxLaPI");
-        echo date("r", $cp->getNotValidAfter()) . PHP_EOL;
-    } catch (CertParserException $e) {
+        $cp = new CertParser('MIIDyzCC...CYkxLaPI');
+        echo date('r', $cp->getNotValidAfter()) . PHP_EOL;
+    } catch (Exception $e) {
         echo $e->getMessage();
     }
 
 All API calls:
 
-* `getFingerprint($algorithm = "sha1")` - get the fingerprint of the 
-  certificate, by default `sha1`. See `hash_algos()` in the PHP manual to
+* `getFingerprint($algorithm = 'sha256')` - get the fingerprint of the 
+  certificate, by default `sha256`. See `hash_algos()` in the PHP manual to
   figure out supported hash algorithms
 * `getName()` - get the subject DN
 * `notValidBefore()` - get the UNIX timestamp from which the certificate is 
@@ -46,7 +45,7 @@ All API calls:
 * `toPem()` - get the certificate as PEM
 * `toBase64()` - get the base64 encoded DER certificate (PEM without headers on 
   one line)
-* `isIssuedBy()` - check wheter the current certificate is issued by the provided
+* `isIssuedBy()` - check whether the current certificate is issued by the provided
   certificate. WEAK comparison only by comparing DNs, not by verifying signatures
 
 # License

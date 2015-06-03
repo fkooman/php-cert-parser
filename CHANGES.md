@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.0
+- remove `CertParserException`, use `RuntimeException` and 
+  `InvalidArgumentException` instead
+- change default fingerprint algorithm to SHA-256
+
 ## 0.1.8
 - add RPM spec files
 - add COPYING file
