@@ -22,108 +22,127 @@ use RuntimeException;
 
 class CertParser
 {
-    private $strippedCert;
-    private $parsedCert;
+    /** @var string */
+    private $pemCert;
+
+    private function __construct($pemCert)
+    {
+        // verify the certificate
+        $this->parsePemCert($pemCert);
+
+        $this->pemCert = $pemCert;
+    }
 
     /**
-     * Construct the CertParser object.
-     *
-     * @param certData the PEM or base64 encoded DER certificate data
+     * Create a new CertParser object from the Base 64 encoded DER, i.e. a
+     * base64_encode of a binary string.
      */
-    public function __construct($certData)
+    public static function fromEncodedDer($encodedDerCert)
     {
-        if (!is_string($certData)) {
-            throw new InvalidArgumentException('input should be string');
-        }
+        $pemCert = sprintf(
+            '-----BEGIN CERTIFICATE-----%s-----END CERTIFICATE-----',
+            PHP_EOL.wordwrap($encodedDerCert, 64, "\n", true).PHP_EOL
+        );
 
-        $pattern = '/-----BEGIN CERTIFICATE-----(.*)-----END CERTIFICATE-----/msU';
-        if (1 === preg_match($pattern, $certData, $matches)) {
-            $certData = $matches[1];
-        }
-
-        // create one long string of the certificate
-        $replaceCharacters = array(' ', "\t", "\n", "\r", "\0" , "\x0B");
-        $certData = str_replace($replaceCharacters, '', $certData);
-
-        // store this stripped certificate
-        $this->strippedCert = $certData;
-
-        // parse the certificate using OpenSSL
-        if (!function_exists('openssl_x509_parse')) {
-            throw new RuntimeException('OpenSSL extension not available');
-        }
-
-        $c = openssl_x509_parse($this->toPEM());
-        if (false === $c) {
-            throw new InvalidArgumentException('unable to parse the certificate');
-        }
-
-        $this->parsedCert = $c;
+        return new self($pemCert);
     }
 
-    public function toBase64()
+    public static function fromEncodedDerFile($filePath)
     {
-        return $this->strippedCert;
+        return self::fromEncodedDer(self::readFile($filePath));
     }
 
-    public function toDer()
+    /**
+     * Create a new CertParser object from a PEM formatted certificate.
+     */
+    public static function fromPem($pemCert)
     {
-        return base64_decode($this->toBase64());
+        return new self($pemCert);
     }
 
-    public function toPem()
+    public static function fromPemFile($filePath)
     {
-        // prepend header and append footer
-        $wrapped = wordwrap($this->toBase64(), 64, "\n", true);
-
-        return '-----BEGIN CERTIFICATE-----'.PHP_EOL.$wrapped.PHP_EOL.'-----END CERTIFICATE-----'.PHP_EOL;
+        return self::fromPem(self::readFile($filePath));
     }
 
-    public static function fromFile($fileName)
+    /**
+     * Create a new CertParser object from a DER formatted certificate.
+     */
+    public static function fromDer($derCert)
     {
-        $fileData = @file_get_contents($fileName);
+        return self::fromEncodedDer(base64_encode($derCert));
+    }
+
+    public static function fromDerFile($filePath)
+    {
+        return self::fromDer(self::readFile($filePath));
+    }
+
+    private static function parsePemCert($pemCert)
+    {
+        $parsedCert = openssl_x509_parse($pemCert);
+        if (false === $parsedCert) {
+            throw new InvalidArgumentException('OpenSSL was unable to parse the certificate');
+        }
+
+        return $parsedCert;
+    }
+
+    private static function readFile($filePath)
+    {
+        $fileData = @file_get_contents($filePath);
         if (false === $fileData) {
-            throw new RuntimeException('unable to read file');
+            throw new RuntimeException('unable to read certificate file');
         }
 
-        return new static($fileData);
+        return $fileData;
     }
 
     /**
-     * Get the UNIX timestamp of when this certificate is valid.
+     * Get the DER format of the certificate.
      */
-    public function getNotValidBefore()
+    private function toDer()
     {
-        if (!array_key_exists('validFrom_time_t', $this->parsedCert)) {
-            throw new RuntimeException('could not find "validFrom_time_t" key');
+        $pattern = '/.*-----BEGIN CERTIFICATE-----(.*)-----END CERTIFICATE-----.*/msU';
+        $replacement = '${1}';
+
+        $plainPemData = preg_replace($pattern, $replacement, $this->pemCert);
+        if (false === $plainPemData) {
+            throw new \Exception('foooo!');
+            // unable to replace, not a valid PEM?
         }
 
-        return $this->parsedCert['validFrom_time_t'];
+        // create one long string of the certificate which turns it into an
+        // encoded DER cert
+        $search = array(' ', "\t", "\n", "\r", "\0" , "\x0B");
+        $encodedDerCert = str_replace($search, '', $plainPemData);
+
+        return base64_decode($encodedDerCert);
     }
 
     /**
-     * Get the UNIX timestamp of when this certificate is no longer valid.
+     * Get the fingerprint of the certificate.
+     *
+     * @param string $alg     the algorithm to use, see hash_algos()
+     * @param bool   $uriSafe encode the hash according to RFC 6920
+     *                        "Naming Things with Hashes" if true
      */
-    public function getNotValidAfter()
+    public function getFingerprint($alg = 'sha256', $uriSafe = false)
     {
-        if (!array_key_exists('validTo_time_t', $this->parsedCert)) {
-            throw new RuntimeException('could not find "validTo_time_t" key');
-        }
-
-        return $this->parsedCert['validTo_time_t'];
-    }
-
-    public function getFingerprint($algorithm = 'sha256', $uriSafe = false)
-    {
-        if (!in_array($algorithm, hash_algos())) {
-            throw new RuntimeException(sprintf('unsupported algorithm "%s"', $algorithm));
+        if (!in_array($alg, hash_algos())) {
+            throw new RuntimeException(
+                sprintf(
+                    'unsupported algorithm "%s"',
+                    $alg
+                )
+            );
         }
 
         if ($uriSafe) {
             return rtrim(
                 strtr(
                     base64_encode(
-                        hash($algorithm, $this->toDer(), true)
+                        hash($alg, $this->toDer(), true)
                     ),
                     '+/',
                     '-_'
@@ -132,100 +151,87 @@ class CertParser
             );
         }
 
-        return hash($algorithm, $this->toDer());
+        return hash($alg, $this->toDer());
     }
 
     /**
-     * Get the common name.
+     * Get the common name (CN) of the certificate.
      */
     public function getName()
     {
-        if (!array_key_exists('name', $this->parsedCert)) {
+        $parsedCert = $this->parsePemCert($this->pemCert);
+        if (!array_key_exists('name', $parsedCert)) {
             throw new RuntimeException('could not find "name" key');
         }
 
-        return $this->parsedCert['name'];
+        return $parsedCert['name'];
     }
 
     /**
-     * Get the whole subject as string.
-     *
-     * @throws CertParserException
-     *
-     * @return string
+     * Get the issue time of the certificate.
      */
-    public function getSubject()
+    public function getNotValidBefore()
     {
-        // @codeCoverageIgnoreStart
-        if (!array_key_exists('subject', $this->parsedCert)) {
-            throw new RuntimeException('could not find "subject" key');
+        $parsedCert = $this->parsePemCert($this->pemCert);
+        if (!array_key_exists('validFrom_time_t', $parsedCert)) {
+            throw new RuntimeException('could not find "validFrom_time_t" key');
         }
-        // @codeCoverageIgnoreEnd
-        return $this->toDistinguishedName($this->parsedCert['subject']);
+
+        return $parsedCert['validFrom_time_t'];
     }
 
     /**
-     * Get the whole subject as string.
-     *
-     * @throws CertParserException
-     *
-     * @return string
+     * Get the expiry time of the certificate.
+     */
+    public function getNotValidAfter()
+    {
+        $parsedCert = $this->parsePemCert($this->pemCert);
+        if (!array_key_exists('validTo_time_t', $parsedCert)) {
+            throw new RuntimeException('could not find "validTo_time_t" key');
+        }
+
+        return $parsedCert['validTo_time_t'];
+    }
+
+    /**
+     * Get the issuer of the certificate as a DN string.
      */
     public function getIssuer()
     {
-        // @codeCoverageIgnoreStart
-        if (!array_key_exists('issuer', $this->parsedCert)) {
+        $parsedCert = $this->parsePemCert($this->pemCert);
+        if (!array_key_exists('issuer', $parsedCert)) {
             throw new RuntimeException('could not find "issuer" key');
         }
-        // @codeCoverageIgnoreEnd
-        return $this->toDistinguishedName($this->parsedCert['issuer']);
+
+        return self::arrayToDn($parsedCert['issuer']);
     }
 
     /**
-     * Checks whether current cert is issued by given cert.
-     *
-     * @param CertParser $cert
-     *
-     * @throws CertParserException
-     *
-     * @return bool
+     * Get the subject of the certificate as a DN string.
      */
-    public function isIssuedBy(CertParser $cert)
+    public function getSubject()
     {
-        return $this->getIssuer() === $cert->getSubject();
+        $parsedCert = $this->parsePemCert($this->pemCert);
+        if (!array_key_exists('subject', $parsedCert)) {
+            throw new RuntimeException('could not find "subject" key');
+        }
+
+        return self::arrayToDn($parsedCert['subject']);
     }
 
-    /**
-     * Returns parsed array data.
-     *
-     * @return array
-     */
-    private function getCertData()
+    private static function arrayToDn(array $data, $sep = ', ')
     {
-        return $this->parsedCert;
-    }
-
-    /**
-     * Transforms the array notification of the distinguished name component to string.
-     *
-     * @param array  $data
-     * @param string $separator
-     *
-     * @return string
-     */
-    protected function toDistinguishedName(array $data, $separator = ', ')
-    {
-        $output = array();
-        foreach ($data as $key => $item) {
-            if (is_array($item)) {
-                foreach ($item as $value) {
-                    $output[] = sprintf('%s=%s', $key, $value);
+        $keyValue = array();
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $v) {
+                    $keyValue[] = sprintf('%s=%s', $key, $v);
                 }
             } else {
-                $output[] = sprintf('%s=%s', $key, $item);
+                $keyValue[] = sprintf('%s=%s', $key, $value);
             }
         }
 
-        return implode($separator, $output);
+        return implode($sep, $keyValue);
     }
 }
