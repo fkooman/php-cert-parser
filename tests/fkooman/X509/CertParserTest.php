@@ -17,42 +17,55 @@
  */
 namespace fkooman\X509;
 
-class CertParserTest extends \PHPUnit_Framework_TestCase
+use PHPUnit_Framework_TestCase;
+
+class CertParserTest extends PHPUnit_Framework_TestCase
 {
-    public function testCert()
+    public static function getFilePath($fileName)
     {
-        $dataDir = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR.'data';
-        $testFiles = array('1.pem');
+        $filePath = dirname(dirname(__DIR__)).'/data/';
 
-        foreach ($testFiles as $t) {
-            $c = CertParser::fromPemFile($dataDir.DIRECTORY_SEPARATOR.$t);
-            $this->assertEquals(1295864337, $c->getNotValidBefore());
-            $this->assertEquals(1611397137, $c->getNotValidAfter());
-            $this->assertEquals(
-                '/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl',
-                $c->getName()
-            );
-            $this->assertEquals(
-                'a36aac83b9a552b3dc724bfc0d7bba6283af5f8e',
-                $c->getFingerprint('sha1')
-            );
-            $this->assertEquals(
-                '47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407',
-                $c->getFingerprint('sha256')
-            );
-
-#            $base64 = $c->toBase64();
-#            $d = new CertParser($base64);
-#            $this->assertEquals('a36aac83b9a552b3dc724bfc0d7bba6283af5f8e', $d->getFingerprint('sha1'));
-#            $this->assertEquals('R2WaE2R9K--71DGwWAB5xCA8OJff-Q6SV4y5ojXWdAc', $d->getFingerprint('sha256', true));
-        }
+        return $filePath.$fileName;
     }
 
-    public function testGarbage()
+    public function testFromPemFile()
     {
-        $dataDir = dirname(dirname(__DIR__)).'/data';
-        $c = CertParser::fromPemFile($dataDir.'/garbage-header.pem');
-        $this->assertEquals('e16f4100e1562ac8b75fb21b1b89875d40ca50ba', $c->getFingerPrint('sha1'));
+        $certParser = CertParser::fromPemFile(self::getFilePath('1.pem'));
+        $this->assertEquals(1295864337, $certParser->getNotValidBefore());
+        $this->assertEquals(1611397137, $certParser->getNotValidAfter());
+        $this->assertEquals('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
+        $this->assertEquals('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', $certParser->getFingerprint());
+        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
+        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
+        $this->assertEquals('R2WaE2R9K--71DGwWAB5xCA8OJff-Q6SV4y5ojXWdAc', $certParser->getFingerPrint('sha256', true));
+    }
+
+    public function testFromDerFile()
+    {
+        $certParser = CertParser::fromDerFile(self::getFilePath('1.der'));
+        $this->assertEquals(1295864337, $certParser->getNotValidBefore());
+        $this->assertEquals(1611397137, $certParser->getNotValidAfter());
+        $this->assertEquals('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
+        $this->assertEquals('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', $certParser->getFingerprint());
+        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
+        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
+    }
+
+    public function testFromEncodedDerFile()
+    {
+        $certParser = CertParser::fromEncodedDerFile(self::getFilePath('1_flat.pem'));
+        $this->assertEquals(1295864337, $certParser->getNotValidBefore());
+        $this->assertEquals(1611397137, $certParser->getNotValidAfter());
+        $this->assertEquals('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
+        $this->assertEquals('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', $certParser->getFingerprint());
+        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
+        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
+    }
+
+    public function testFromPemFileWithGarbageHeader()
+    {
+        $certParser = CertParser::fromPemFile(self::getFilePath('garbage-header.pem'));
+        $this->assertEquals('e16f4100e1562ac8b75fb21b1b89875d40ca50ba', $certParser->getFingerPrint('sha1'));
     }
 
     /**
@@ -61,7 +74,7 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testBrokenData()
     {
-        $c = CertParser::fromPem('foo');
+        $certParser = CertParser::fromPem('foo');
     }
 
     /**
@@ -70,23 +83,20 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
      */
     public function testUnsupportedAlgorithm()
     {
-        $testFile = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR.'1.pem';
-        $c = CertParser::fromPemFile($testFile);
-        $c->getFingerprint('foo');
+        $certParser = CertParser::fromPemFile(self::getFilePath('1.pem'));
+        $certParser->getFingerprint('foo');
     }
 
     public function testSubjectIsExtractedAndFormatted()
     {
-        $certParser = $this->generateCertParser('2');
-        $result = $certParser->getSubject();
-        $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing, CN=foobar.tld, emailAddress=baz@foobar.tld', $result);
+        $certParser = CertParser::fromPemFile(self::getFilePath('2.pem'));
+        $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing, CN=foobar.tld, emailAddress=baz@foobar.tld', $certParser->getSubject());
     }
 
     public function testIssuerIsExtractedAndFormatted()
     {
-        $certParser = $this->generateCertParser('2');
-        $result = $certParser->getIssuer();
-        $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing CA, CN=foobar.tld, emailAddress=baz@foobar.tld', $result);
+        $certParser = CertParser::fromPemFile(self::getFilePath('2.pem'));
+        $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing CA, CN=foobar.tld, emailAddress=baz@foobar.tld', $certParser->getIssuer());
     }
 
     public function testMultipleComponentsInDistinguishedName()
@@ -94,31 +104,8 @@ class CertParserTest extends \PHPUnit_Framework_TestCase
         if (PHP_VERSION <= '5.4.0') {
             $this->markTestSkipped('Works only with PHP >= 5.4');
         } else {
-            $certParser = $this->generateCertParser('2-multi');
-            $result = $certParser->getSubject();
-            $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing Multi, OU=Foo, CN=multi.foobar.tld, emailAddress=baz@foobar.tld', $result);
+            $certParser = CertParser::fromPemFile(self::getFilePath('2-multi.pem'));
+            $this->assertSame('C=DE, ST=Berlin, L=Berlin, O=FooBar Inc, OU=Testing Multi, OU=Foo, CN=multi.foobar.tld, emailAddress=baz@foobar.tld', $certParser->getSubject());
         }
-    }
-
-#    public function testValidSigningChainIsCorrectlyRecognized()
-#    {
-#        $cert = $this->generateCertParser('2');
-#        $ca = $this->generateCertParser('2-ca');
-#        $this->assertTrue($cert->isIssuedBy($ca));
-#    }
-
-#    public function testInvalidSigningChainIsCorrectlyRecognized()
-#    {
-#        $cert = $this->generateCertParser('2');
-#        $ca = $this->generateCertParser('2-ca');
-#        $this->assertFalse($ca->isIssuedBy($cert));
-#    }
-
-    protected function generateCertParser($name = '1')
-    {
-        $testFile = dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR.'data'.DIRECTORY_SEPARATOR."{$name}.pem";
-        $c = CertParser::fromPemFile($testFile);
-
-        return $c;
     }
 }

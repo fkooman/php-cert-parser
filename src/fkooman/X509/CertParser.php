@@ -107,9 +107,8 @@ class CertParser
         $replacement = '${1}';
 
         $plainPemData = preg_replace($pattern, $replacement, $this->pemCert);
-        if (false === $plainPemData) {
-            throw new \Exception('foooo!');
-            // unable to replace, not a valid PEM?
+        if (null === $plainPemData) {
+            throw new RuntimeException('unable to extract the encoded DER data from the certificate');
         }
 
         // create one long string of the certificate which turns it into an
