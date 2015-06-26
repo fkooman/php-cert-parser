@@ -13,7 +13,7 @@
     ],
     "autoload": {
         "psr-0": {
-            "fkooman\\X509": "src/"
+            "fkooman\\X509\\": "src/"
         }
     },
     "description": "Simple OpenSSL based X.509 certificate parser",

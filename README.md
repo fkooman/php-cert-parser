@@ -1,8 +1,9 @@
+[![Build Status](https://secure.travis-ci.org/fkooman/php-cert-parser.png?branch=master)](http://travis-ci.org/fkooman/php-cert-parser)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/fkooman/php-cert-parser/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/fkooman/php-cert-parser/?branch=master)
+
 # Introduction
 This library enables you to parse X.509 certificates in order to be able
 to extract some attributes from it and calculate the fingerprint.
-
-[![Build Status](https://secure.travis-ci.org/fkooman/php-cert-parser.png?branch=master)](http://travis-ci.org/fkooman/php-cert-parser)
 
 # API
 For example, to obtain the certificate expiry date from a certificate 
