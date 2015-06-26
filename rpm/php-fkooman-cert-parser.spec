@@ -17,6 +17,7 @@ BuildArch:  noarch
 
 Provides:   php-composer(%{composer_vendor}/%{composer_project}) = %{version}
 
+Requires:   php-openssl
 Requires:   php >= 5.3.3
 
 %description
@@ -39,7 +40,7 @@ cp -pr src/* ${RPM_BUILD_ROOT}%{_datadir}/php
 %doc README.md CHANGES.md COPYING composer.json
 
 %changelog
-* Wed Jun 03 2015 François Kooman <fkooman@tuxed.net> - 0.2.0-1
+* Fri Jun 26 2015 François Kooman <fkooman@tuxed.net> - 0.2.0-1
 - update to 0.2.0
 
 * Mon Jan 26 2015 François Kooman <fkooman@tuxed.net> - 0.1.8-1

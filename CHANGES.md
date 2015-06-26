@@ -1,6 +1,8 @@
 # Changelog
 
 ## 0.2.0
+- refactor code a lot
+- new API, see README.md
 - remove `CertParserException`, use `RuntimeException` and 
   `InvalidArgumentException` instead
 - change default fingerprint algorithm to SHA-256
