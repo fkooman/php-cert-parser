@@ -159,12 +159,7 @@ class CertParser
      */
     public function getName()
     {
-        $parsedCert = $this->parsePemCert($this->pemCert);
-        if (!array_key_exists('name', $parsedCert)) {
-            throw new RuntimeException('could not find "name" key');
-        }
-
-        return $parsedCert['name'];
+        return $this->getCertElementFromCert('name');
     }
 
     /**
@@ -172,12 +167,7 @@ class CertParser
      */
     public function getNotValidBefore()
     {
-        $parsedCert = $this->parsePemCert($this->pemCert);
-        if (!array_key_exists('validFrom_time_t', $parsedCert)) {
-            throw new RuntimeException('could not find "validFrom_time_t" key');
-        }
-
-        return $parsedCert['validFrom_time_t'];
+        return $this->getCertElementFromCert('validFrom_time_t');
     }
 
     /**
@@ -185,12 +175,7 @@ class CertParser
      */
     public function getNotValidAfter()
     {
-        $parsedCert = $this->parsePemCert($this->pemCert);
-        if (!array_key_exists('validTo_time_t', $parsedCert)) {
-            throw new RuntimeException('could not find "validTo_time_t" key');
-        }
-
-        return $parsedCert['validTo_time_t'];
+        return $this->getCertElementFromCert('validTo_time_t');
     }
 
     /**
@@ -198,12 +183,7 @@ class CertParser
      */
     public function getIssuer()
     {
-        $parsedCert = $this->parsePemCert($this->pemCert);
-        if (!array_key_exists('issuer', $parsedCert)) {
-            throw new RuntimeException('could not find "issuer" key');
-        }
-
-        return self::arrayToDn($parsedCert['issuer']);
+        return self::arrayToDn($this->getCertElementFromCert('issuer'));
     }
 
     /**
@@ -211,12 +191,19 @@ class CertParser
      */
     public function getSubject()
     {
+        return self::arrayToDn($this->getCertElementFromCert('subject'));
+    }
+
+    private function getCertElementFromCert($certElement)
+    {
         $parsedCert = $this->parsePemCert($this->pemCert);
-        if (!array_key_exists('subject', $parsedCert)) {
-            throw new RuntimeException('could not find "subject" key');
+        if (!array_key_exists($certElement, $parsedCert)) {
+            throw new RuntimeException(
+                sprintf('could not find "%s" key', $certElement)
+            );
         }
 
-        return self::arrayToDn($parsedCert['subject']);
+        return $parsedCert[$certElement];
     }
 
     private static function arrayToDn(array $data, $sep = ', ')
