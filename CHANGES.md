@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0
+- `getFingerprint()` now always returns raw hash of the certificate, use 
+  `bin2hex()` on the result to get old behavior
+- remove uriSafe fingerprint, use `fkooman/base64` to encode the raw 
+  fingerprint instead
+
 ## 0.2.0
 - new API, see README.md
 - remove `CertParserException`, use `RuntimeException` and 

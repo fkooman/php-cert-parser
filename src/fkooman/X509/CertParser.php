@@ -121,13 +121,15 @@ class CertParser
     }
 
     /**
-     * Get the fingerprint of the certificate.
+     * Get the raw fingerprint of the certificate.
      *
-     * @param string $alg     the algorithm to use, see hash_algos()
-     * @param bool   $uriSafe encode the hash according to RFC 6920
-     *                        "Naming Things with Hashes" if true
+     * @param string $alg the algorithm to use
+     *
+     * @return string the raw fingerprint of the certificate as binary string
+     *
+     * @see http://php.net/manual/en/function.hash-algos.php
      */
-    public function getFingerprint($alg = 'sha256', $uriSafe = false)
+    public function getFingerprint($alg = 'sha256')
     {
         if (!in_array($alg, hash_algos())) {
             throw new RuntimeException(
@@ -138,20 +140,7 @@ class CertParser
             );
         }
 
-        if ($uriSafe) {
-            return rtrim(
-                strtr(
-                    base64_encode(
-                        hash($alg, $this->toDer(), true)
-                    ),
-                    '+/',
-                    '-_'
-                ),
-                '='
-            );
-        }
-
-        return hash($alg, $this->toDer());
+        return hash($alg, $this->toDer(), true);
     }
 
     /**

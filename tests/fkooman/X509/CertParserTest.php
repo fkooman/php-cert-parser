@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright 2013 François Kooman <fkooman@tuxed.net>.
+ * Copyright 2015 François Kooman <fkooman@tuxed.net>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,41 +32,40 @@ class CertParserTest extends PHPUnit_Framework_TestCase
     public function testFromPemFile()
     {
         $certParser = CertParser::fromPemFile(self::getFilePath('1.pem'));
-        $this->assertEquals(1295864337, $certParser->getNotValidBefore());
-        $this->assertEquals(1611397137, $certParser->getNotValidAfter());
-        $this->assertEquals('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
-        $this->assertEquals('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', $certParser->getFingerprint());
-        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
-        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
-        $this->assertEquals('R2WaE2R9K--71DGwWAB5xCA8OJff-Q6SV4y5ojXWdAc', $certParser->getFingerPrint('sha256', true));
+        $this->assertSame(1295864337, $certParser->getNotValidBefore());
+        $this->assertSame(1611397137, $certParser->getNotValidAfter());
+        $this->assertSame('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
+        $this->assertSame('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', bin2hex($certParser->getFingerprint()));
+        $this->assertSame('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
+        $this->assertSame('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
     }
 
     public function testFromDerFile()
     {
         $certParser = CertParser::fromDerFile(self::getFilePath('1.der'));
-        $this->assertEquals(1295864337, $certParser->getNotValidBefore());
-        $this->assertEquals(1611397137, $certParser->getNotValidAfter());
-        $this->assertEquals('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
-        $this->assertEquals('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', $certParser->getFingerprint());
-        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
-        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
+        $this->assertSame(1295864337, $certParser->getNotValidBefore());
+        $this->assertSame(1611397137, $certParser->getNotValidAfter());
+        $this->assertSame('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
+        $this->assertSame('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', bin2hex($certParser->getFingerprint()));
+        $this->assertSame('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
+        $this->assertSame('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
     }
 
     public function testFromEncodedDerFile()
     {
         $certParser = CertParser::fromEncodedDerFile(self::getFilePath('1_flat.pem'));
-        $this->assertEquals(1295864337, $certParser->getNotValidBefore());
-        $this->assertEquals(1611397137, $certParser->getNotValidAfter());
-        $this->assertEquals('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
-        $this->assertEquals('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', $certParser->getFingerprint());
-        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
-        $this->assertEquals('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
+        $this->assertSame(1295864337, $certParser->getNotValidBefore());
+        $this->assertSame(1611397137, $certParser->getNotValidAfter());
+        $this->assertSame('/C=NL/ST=Utrecht/L=Utrecht/O=SURFnet B.V./OU=SURFconext/CN=engine.surfconext.nl', $certParser->getName());
+        $this->assertSame('47659a13647d2befbbd431b0580079c4203c3897dff90e92578cb9a235d67407', bin2hex($certParser->getFingerprint()));
+        $this->assertSame('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getIssuer());
+        $this->assertSame('C=NL, ST=Utrecht, L=Utrecht, O=SURFnet B.V., OU=SURFconext, CN=engine.surfconext.nl', $certParser->getSubject());
     }
 
     public function testFromPemFileWithGarbageHeader()
     {
         $certParser = CertParser::fromPemFile(self::getFilePath('garbage-header.pem'));
-        $this->assertEquals('e16f4100e1562ac8b75fb21b1b89875d40ca50ba', $certParser->getFingerPrint('sha1'));
+        $this->assertSame('e16f4100e1562ac8b75fb21b1b89875d40ca50ba', bin2hex($certParser->getFingerPrint('sha1')));
     }
 
     /**

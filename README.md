@@ -24,7 +24,7 @@ All API calls:
     public static function fromPemFile($filePath)
     public static function fromDer($derCert)
     public static function fromDerFile($filePath)
-    public function getFingerprint($alg = 'sha256', $uriSafe = false)
+    public function getFingerprint($alg = 'sha256')
     public function getName()
     public function getNotValidBefore()
     public function getNotValidAfter()

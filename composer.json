@@ -20,7 +20,10 @@
     "license": "Apache-2.0",
     "name": "fkooman/cert-parser",
     "require": {
+        "ext-hash": "*",
         "ext-openssl": "*",
+        "ext-pcre": "*",
+        "ext-spl": "*",
         "php": ">=5.3.3"
     }
 }

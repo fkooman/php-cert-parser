@@ -5,7 +5,7 @@
 %global github_name      php-cert-parser
 
 Name:       php-%{composer_vendor}-%{composer_project}
-Version:    0.2.0
+Version:    1.0.0
 Release:    1%{?dist}
 Summary:    Simple OpenSSL based X.509 certificate parser
 
@@ -17,8 +17,11 @@ BuildArch:  noarch
 
 Provides:   php-composer(%{composer_vendor}/%{composer_project}) = %{version}
 
+Requires:   php(language) >= 5.3.3
+Requires:   php-hash
 Requires:   php-openssl
-Requires:   php >= 5.3.3
+Requires:   php-pcre
+Requires:   php-spl
 
 %description
 This library enables you to parse X.509 certificates in order to be able to 
@@ -37,9 +40,13 @@ cp -pr src/* ${RPM_BUILD_ROOT}%{_datadir}/php
 %defattr(-,root,root,-)
 %dir %{_datadir}/php/%{composer_vendor}/X509
 %{_datadir}/php/%{composer_vendor}/X509/*
-%doc README.md CHANGES.md COPYING composer.json
+%doc README.md CHANGES.md composer.json
+%license COPYING
 
 %changelog
+* Wed Jul 08 2015 François Kooman <fkooman@tuxed.net> - 1.0.0-1
+- update to 1.0.0
+
 * Fri Jun 26 2015 François Kooman <fkooman@tuxed.net> - 0.2.0-1
 - update to 0.2.0
 
